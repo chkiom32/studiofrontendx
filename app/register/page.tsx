@@ -27,7 +27,7 @@ export default function RegisterPage() {
     useEffect(() => {
         // Capture redirect params once on mount
         const params = new URLSearchParams(window.location.search);
-        redirectPath.current = params.get('redirect') || "/";
+        redirectPath.current = params.get('redirect') || "/onboarding";
     }, []);
 
     useEffect(() => {
@@ -52,7 +52,15 @@ export default function RegisterPage() {
 
         setIsSubmitting(true);
         try {
-            await signUpWithEmail(formData.email, formData.password, formData.name);
+            const data = await signUpWithEmail(formData.email, formData.password, formData.name);
+
+            if (data?.session) {
+                // Auto sign-in successful
+                redirectPath.current = "/onboarding";
+                router.push("/onboarding");
+                return;
+            }
+
             setIsVerificationSent(true);
             setIsSubmitting(false);
         } catch (err: any) {
